@@ -83,22 +83,19 @@ const AppContent = () => {
 
   return (
     <div className="app-shell">
+      {/* Показываем контент всегда - он будет виден после завершения onboarding */}
+      <main className="page">
+        <ErrorBanner message={error} />
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Routes>
+      </main>
+      <NavigationBar />
+      {/* Onboarding показывается поверх контента, если нужен */}
       <Onboarding onComplete={() => setOnboardingComplete(true)} />
-      {/* Показываем контент всегда, если onboarding не показывается */}
-      {onboardingComplete && (
-        <>
-          <main className="page">
-            <ErrorBanner message={error} />
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/wishlist" element={<WishlistPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-          </main>
-          <NavigationBar />
-        </>
-      )}
     </div>
   );
 };
