@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd money_mate/telegram-mini-app && npm run build",
+  "outputDirectory": "money_mate/telegram-mini-app/dist",
+  "installCommand": "cd money_mate/telegram-mini-app && npm install",
+  "framework": "vite"
+}
+
