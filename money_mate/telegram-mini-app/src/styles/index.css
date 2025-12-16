@@ -58,7 +58,8 @@ button {
 
 .page {
   flex: 1;
-  padding: 1.5rem 1rem 5rem;
+  /* Сохраняем изначальный padding-bottom 5rem + добавляем отступ для iOS */
+  padding: 1.5rem 1rem calc(5rem + env(safe-area-inset-bottom, 0px) * 1.5);
   max-width: 640px;
   width: 100%;
   margin: 0 auto;
@@ -201,16 +202,14 @@ button {
 
 .bottom-nav {
   position: fixed;
-  bottom: 0.75rem;
+  /* Увеличиваем отступ в 1.5 раза для iOS home indicator */
+  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px) * 1.5);
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
   z-index: 50;
   pointer-events: none;
-  /* Отступ для iOS home indicator */
-  padding-bottom: env(safe-area-inset-bottom, 0.75rem);
-  bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .bottom-nav__inner {

@@ -32,24 +32,60 @@ const AppContent = () => {
       console.warn('Failed to initialize Telegram User ID:', error);
     }
 
-    // Блокируем закрытие приложения по свайпу в контентной области
-    try {
-      WebApp.enableClosingConfirmation?.();
-      // Отключаем стандартное поведение свайпа вниз для контента
-      WebApp.BackButton?.hide?.();
-    } catch (error) {
-      console.warn('Failed to configure WebApp closing:', error);
-    }
-
     fetchOperations();
     fetchWishes();
   }, [fetchOperations, fetchWishes]);
 
+  useEffect(() => {
+    // Блокируем закрытие приложения по свайпу в контентной области
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      // Проверяем, что свайп начинается не в nav bar области (верхние 60px)
+      const touchY = e.touches[0]?.clientY || 0;
+      const isNavBarArea = touchY < 60;
+      
+      if (!isNavBarArea) {
+        touchStartY = touchY;
+        touchStartTime = Date.now();
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartY > 0 && touchStartY >= 60) {
+        const touchCurrentY = e.touches[0]?.clientY || 0;
+        const deltaY = touchCurrentY - touchStartY;
+        const deltaTime = Date.now() - touchStartTime;
+        
+        // Блокируем свайп вниз (положительный deltaY) в контентной области
+        if (deltaY > 10 && deltaTime < 300 && window.scrollY === 0) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }
+    };
+
+    const appShell = document.querySelector('.app-shell');
+    if (appShell) {
+      appShell.addEventListener('touchstart', handleTouchStart, { passive: true });
+      appShell.addEventListener('touchmove', handleTouchMove, { passive: false });
+    }
+
+    return () => {
+      if (appShell) {
+        appShell.removeEventListener('touchstart', handleTouchStart);
+        appShell.removeEventListener('touchmove', handleTouchMove);
+      }
+    };
+  }, []);
+
   return (
     <div className="app-shell">
       <Onboarding onComplete={() => setOnboardingComplete(true)} />
-      {/* Показываем контент сразу, если onboarding не нужен */}
-      {onboardingComplete ? (
+      {/* Показываем контент всегда, если onboarding не показывается */}
+      {onboardingComplete && (
         <>
           <main className="page">
             <ErrorBanner message={error} />
@@ -62,7 +98,7 @@ const AppContent = () => {
           </main>
           <NavigationBar />
         </>
-      ) : null}
+      )}
     </div>
   );
 };
