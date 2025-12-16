@@ -15,7 +15,11 @@ const AppContent = () => {
   const fetchOperations = useFinanceStore((state) => state.fetchOperations);
   const fetchWishes = useFinanceStore((state) => state.fetchWishes);
   const error = useFinanceStore((state) => state.error);
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  // Инициализируем onboardingComplete сразу из localStorage, чтобы избежать пустого экрана
+  const [onboardingComplete, setOnboardingComplete] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('moneymate_onboarding_completed');
+  });
 
   useEffect(() => {
     // Инициализируем Telegram User ID для Supabase

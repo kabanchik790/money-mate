@@ -115,17 +115,33 @@ export const useTelegramTheme = (): ThemeController => {
       (typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-color-scheme: dark)').matches);
     const isDark = choice === 'dark' || (choice === 'system' && systemPrefersDark);
+    
+    // Если пользователь явно выбрал светлую тему, используем fallback цвета
+    const useLightTheme = choice === 'light';
+    const useDarkTheme = choice === 'dark' || (choice === 'system' && systemPrefersDark);
+    
     return {
       isDark,
-      background: isDark
+      background: useLightTheme
+        ? '#f5f5fa'
+        : useDarkTheme
         ? themeParams?.secondary_bg_color ?? '#07070d'
         : themeParams?.secondary_bg_color ?? '#f5f5fa',
-      card: isDark ? themeParams?.bg_color ?? '#11111a' : themeParams?.bg_color ?? '#ffffff',
-      cardMuted: isDark ? '#1b1b26' : '#f1f0ff',
-      text: isDark ? themeParams?.text_color ?? '#f8fafc' : themeParams?.text_color ?? '#0f172a',
-      textMuted: isDark ? '#cbd5f5' : '#475569',
-      accent: themeParams?.button_color ?? '#8462F4',
-      accentMuted: themeParams?.button_text_color ?? '#ffffff'
+      card: useLightTheme
+        ? '#ffffff'
+        : useDarkTheme
+        ? themeParams?.bg_color ?? '#11111a'
+        : themeParams?.bg_color ?? '#ffffff',
+      cardMuted: useLightTheme ? '#f9f9ff' : useDarkTheme ? '#1b1b26' : '#f1f0ff',
+      text: useLightTheme
+        ? '#0f172a'
+        : useDarkTheme
+        ? themeParams?.text_color ?? '#f8fafc'
+        : themeParams?.text_color ?? '#0f172a',
+      textMuted: useLightTheme ? '#475569' : useDarkTheme ? '#cbd5f5' : '#475569',
+      // Всегда используем фиолетовый цвет вместо цвета кнопки Telegram
+      accent: '#8462F4',
+      accentMuted: '#ffffff'
     };
   }, [choice, themeParams]);
 
