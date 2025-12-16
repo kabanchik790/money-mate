@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { ThemeProvider } from './context/ThemeContext';
 import { useFinanceStore } from './store/financeStore';
@@ -15,11 +15,21 @@ const AppContent = () => {
   const fetchOperations = useFinanceStore((state) => state.fetchOperations);
   const fetchWishes = useFinanceStore((state) => state.fetchWishes);
   const error = useFinanceStore((state) => state.error);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   // Инициализируем onboardingComplete сразу из localStorage, чтобы избежать пустого экрана
   const [onboardingComplete, setOnboardingComplete] = useState(() => {
     if (typeof window === 'undefined') return false;
     return !!localStorage.getItem('moneymate_onboarding_completed');
   });
+
+  // Принудительно переходим на главную страницу при первом рендере, если путь пустой
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     // Инициализируем Telegram User ID для Supabase
@@ -93,6 +103,7 @@ const AppContent = () => {
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
+      {/* Таб-бар рендерится одновременно с контентом */}
       <NavigationBar />
       {/* Onboarding показывается поверх контента, если нужен */}
       <Onboarding onComplete={() => setOnboardingComplete(true)} />
