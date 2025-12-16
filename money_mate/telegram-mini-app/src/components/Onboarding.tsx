@@ -8,12 +8,18 @@ type OnboardingProps = {
 };
 
 export const Onboarding = ({ onComplete }: OnboardingProps) => {
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  // Инициализируем сразу из localStorage, чтобы избежать пустого экрана
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !localStorage.getItem(ONBOARDING_KEY);
+  });
 
   useEffect(() => {
     const completed = localStorage.getItem(ONBOARDING_KEY);
     if (!completed) {
       setShowOnboarding(true);
+    } else {
+      setShowOnboarding(false);
     }
   }, []);
 

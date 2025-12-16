@@ -32,19 +32,24 @@ const AppContent = () => {
       console.warn('Failed to initialize Telegram User ID:', error);
     }
 
+    // Блокируем закрытие приложения по свайпу в контентной области
+    try {
+      WebApp.enableClosingConfirmation?.();
+      // Отключаем стандартное поведение свайпа вниз для контента
+      WebApp.BackButton?.hide?.();
+    } catch (error) {
+      console.warn('Failed to configure WebApp closing:', error);
+    }
+
     fetchOperations();
     fetchWishes();
-    // Проверяем, был ли onboarding уже показан
-    const completed = localStorage.getItem('moneymate_onboarding_completed');
-    if (completed) {
-      setOnboardingComplete(true);
-    }
   }, [fetchOperations, fetchWishes]);
 
   return (
     <div className="app-shell">
       <Onboarding onComplete={() => setOnboardingComplete(true)} />
-      {onboardingComplete && (
+      {/* Показываем контент сразу, если onboarding не нужен */}
+      {onboardingComplete ? (
         <>
           <main className="page">
             <ErrorBanner message={error} />
@@ -57,7 +62,7 @@ const AppContent = () => {
           </main>
           <NavigationBar />
         </>
-      )}
+      ) : null}
     </div>
   );
 };
