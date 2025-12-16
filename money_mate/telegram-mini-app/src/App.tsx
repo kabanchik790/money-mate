@@ -26,7 +26,9 @@ const AppContent = () => {
 
   // Принудительно переходим на главную страницу при первом рендере, если путь пустой
   useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '') {
+    // Проверяем и хеш в URL тоже (для HashRouter)
+    const currentPath = location.pathname || window.location.hash.replace('#', '') || '/';
+    if (currentPath === '/' || currentPath === '') {
       navigate('/dashboard', { replace: true });
     }
   }, [location.pathname, navigate]);
